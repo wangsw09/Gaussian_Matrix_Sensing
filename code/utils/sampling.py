@@ -3,6 +3,8 @@ import numpy.random as npr
 import numpy.linalg as npl
 import scipy as sp
 
+from . import base_class as bc
+
 def haar(n, m):
     '''
     Return a (n * m) random orthogonal matrix following haar distribution.
@@ -29,7 +31,7 @@ def haar(n, m):
     return Q
 
 
-def lowRank(n, m, r, dist):
+def lowRank(n, m, r, dist, **kwargs):
     '''
     Return a (n * m) low rank matrix
     
@@ -49,12 +51,15 @@ def lowRank(n, m, r, dist):
     U = haar(n, r)
     V = haar(m, r)
 
-    if type(dist) = str:
-        L = np.diag()
-    elif type(dist) = ddist:
-        L = np.diag()
+    if type(dist) == str:
+        sampler = getattr(npr, dist)
+        L = np.diag(sampler(size = r, **kwargs))
+    elif type(dist) == bc.ddist:
+        L = np.diag(dist.sample(r))
     else:
         raise TypeError("dist must be either a string specifying the distribution, or of ddist type.")
 
     return np.dot(U, np.dot(L, V.T))
+
+
 
